@@ -149,15 +149,26 @@ The central configuration is `playwright.config.ts`. It sets the base URL,
 the `webServer` block that starts the dev server automatically before tests
 run, and any global timeouts or reporter settings.
 
-Example `webServer` block so tests start the server themselves:
+The full dev stack is managed via `mani` (see the [workspace README](../README.md)):
+
+```bash
+mani run dev-edge        # start agent (port 8082) + studio (port 3010)
+mani run kill-dev        # stop all dev processes
+```
+
+Example `webServer` block so Playwright starts the studio frontend itself:
 
 ```ts
 webServer: {
   command: 'pnpm run dev',
-  url: 'http://localhost:3000',
+  url: 'http://localhost:3010',
   reuseExistingServer: !process.env.CI,
 },
 ```
+
+For tests that only need the frontend, `pnpm run dev` in `studio/` is enough.
+For tests that exercise backend-connected routes, start the full stack first
+with `mani run dev-edge` and set `reuseExistingServer: true`.
 
 ## CI
 
