@@ -2,7 +2,7 @@
   "name": "@listo/studio",
   "version": "0.1.0",
   "private": true,
-  "description": "Studio UI — Rsbuild + Rspack + Module Federation + Tauri 2",
+  "description": "Studio UI \u2014 Rsbuild + Rspack + Module Federation + Tauri 2",
   "type": "module",
   "scripts": {
     "dev": "rsbuild dev",
@@ -11,7 +11,8 @@
     "build:tauri": "rsbuild build --env-mode tauri",
     "tauri:build": "tauri build",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "build": "pnpm run build:web"
   },
   "dependencies": {
     "@module-federation/enhanced": "^0.6.0",
