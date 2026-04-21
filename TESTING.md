@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how we will test `studio` in the near term.
+This document defines how we test `studio`.
 
 The first goal is simple: automate confidence checks for the browser UI so we
 can catch broken navigation, dead buttons, missing screens, and obvious
@@ -108,6 +108,70 @@ Why `Playwright`:
 - great debugging tools
 - easy CI integration
 
+## Setup
+
+Install Playwright and the Chromium browser once:
+
+```bash
+pnpm add -D @playwright/test
+pnpm exec playwright install chromium
+```
+
+Add a `test` script to `package.json`:
+
+```json
+"test": "playwright test"
+```
+
+Run tests:
+
+```bash
+pnpm test                  # run all tests
+pnpm test --headed         # run with visible browser
+pnpm test e2e/navigation   # run a specific file
+```
+
+## Test File Location
+
+All browser tests live in `e2e/` at the root of the `studio` package:
+
+```
+studio/
+  e2e/
+    app-shell.spec.ts
+    navigation.spec.ts
+    topbar.spec.ts
+    routes.spec.ts
+  playwright.config.ts
+```
+
+The central configuration is `playwright.config.ts`. It sets the base URL,
+the `webServer` block that starts the dev server automatically before tests
+run, and any global timeouts or reporter settings.
+
+Example `webServer` block so tests start the server themselves:
+
+```ts
+webServer: {
+  command: 'pnpm run dev',
+  url: 'http://localhost:3000',
+  reuseExistingServer: !process.env.CI,
+},
+```
+
+## CI
+
+Tests run automatically on every pull request and on push to `main`.
+
+The CI step:
+
+1. installs dependencies
+2. runs `pnpm test` in `studio/`
+3. uploads the Playwright HTML report as a build artifact on failure
+
+Tests must pass before a PR can merge. If a test is flaky in CI but passes
+locally, fix the flake before merging — do not skip or retry-suppress it.
+
 ## Test Levels
 
 We should think about browser testing in layers.
@@ -157,6 +221,11 @@ The first automated browser milestone should cover:
 4. The topbar theme toggle is clickable.
 5. No unexpected console errors appear during those smoke flows.
 
+"Unexpected" means any `console.error` that originates from application code.
+Known third-party warnings and React development-mode notices are acceptable
+and should be suppressed in the Playwright config so they do not cause false
+failures.
+
 If we have only a few tests at first, this is enough.
 
 ## Selector Strategy
@@ -172,6 +241,11 @@ Guidelines:
 - prefer `getByRole()` for buttons, links, dialogs, headings, and inputs
 - avoid brittle CSS selectors tied to layout or icon structure
 - add `data-testid` intentionally, not everywhere
+
+`data-testid` naming convention: use lowercase kebab-case, scoped from the
+component outward. Examples: `data-testid="topbar-theme-toggle"`,
+`data-testid="sidebar-nav-flows"`, `data-testid="page-blocks-heading"`.
+Avoid generic names like `data-testid="button"` or PascalCase.
 
 ## What Makes A Good Browser Test
 
@@ -243,14 +317,13 @@ A new browser test addition is considered complete when:
 - selectors are stable
 - the test does not introduce avoidable flakiness
 
-## Next Step After This Document
+## Next Implementation Steps
 
-After this document, the next implementation step should be:
-
-1. add Playwright to the project
-2. add a minimal config that starts the dev server
-3. add the first smoke specs from this document
+1. add `@playwright/test` and install Chromium (see Setup above)
+2. create `playwright.config.ts` with the `webServer` block
+3. add the first smoke specs from the proposed test cases above
 4. run them locally and tighten selectors where needed
+5. add the CI step so tests run on every PR
 
 ## Later Expansion
 
