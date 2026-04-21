@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUiStore } from "@listo/ui-core";
 import { useAuthStore } from "@listo/ui-core";
 import { useAuth } from "@listo/ui-core";
-import { ArrowLeft, LogOut, Moon, Sparkles, Sun } from "lucide-react";
-import { useGlobalAiChat } from "@listo/ui-core";
+import { ArrowLeft, LogOut, Moon, Search, Sparkles, Sun } from "lucide-react";
+import { useGlobalAiChat, useSearchPalette } from "@listo/ui-core";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -98,6 +98,7 @@ export function SiteHeader() {
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
   const toggleAiChat = useGlobalAiChat((s) => s.toggle);
   const aiChatOpen = useGlobalAiChat((s) => s.open);
+  const openSearch = useSearchPalette().show;
   const email = user?.profile["email"] as string | undefined;
   const canGoBack = breadcrumbs.length > 1;
 
@@ -151,6 +152,19 @@ export function SiteHeader() {
 
       {/* Right-hand controls */}
       <div className="flex items-center gap-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={openSearch}
+              aria-label="Search"
+            >
+              <Search size={15} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Search (⌘K)</TooltipContent>
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
