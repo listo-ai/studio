@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
-import { MF_SHARED_SINGLETONS } from "@listo/ui-core/mf";
+import { createSharedSingletons } from "@listo/ui-core/mf";
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,6 +45,18 @@ export default defineConfig(({ envMode }) => {
       port: 3000,
     },
 
+    // Disable rsbuild's default `dev.lazyCompilation: { imports: true }`.
+    // Lazy-compilation proxies are incompatible with Module Federation
+    // shared singletons: the share-scope factory fetches chunks but the
+    // lazy proxy defers actual module evaluation until the proxy's own
+    // XHR callback fires, which doesn't happen inside an MF consume
+    // path — chunks return 200 yet factories never run, leaving
+    // `@listo/ui-core` / `@listo/ui-kit` stuck at `loaded: false` and
+    // the React app never mounting (silent — no console errors).
+    dev: {
+      lazyCompilation: false,
+    },
+
     tools: {
       postcss: {
         postcssOptions: {
@@ -62,13 +74,14 @@ export default defineConfig(({ envMode }) => {
             exposes: {
               "./registry": "./src/providers/registry.tsx",
             },
-            shared: MF_SHARED_SINGLETONS,
-            // Point the DTS plugin at the actual output dir so type zips land
-            // in the right place and don't throw ENOENT on the default dist/.
-            dts: {
-              generateTypes: { tsConfigPath: "./tsconfig.json" },
-              outputDir: isTauri ? "dist-tauri" : "dist-web",
-            },
+            shared: createSharedSingletons(),
+            // MF DTS type-zip generation is OFF: it's intended for remotes
+            // published as npm packages where consumers fetch types at
+            // build time. Inside this monorepo, types flow through
+            // workspace:* symlinks — MF DTS just spawns tsc via `npx`,
+            // which on some environments isn't on PATH and spams
+            // #TYPE-001 on every HMR rebuild.
+            dts: false,
           }),
         );
 

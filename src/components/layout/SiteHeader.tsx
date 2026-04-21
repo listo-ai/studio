@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUiStore } from "@listo/ui-core";
 import { useAuthStore } from "@listo/ui-core";
@@ -127,19 +128,22 @@ export function SiteHeader() {
         <BreadcrumbList>
           {breadcrumbs.map((seg, idx) => {
             const isLast = idx === breadcrumbs.length - 1;
+            // BreadcrumbSeparator renders as <li>, so it must be a
+            // sibling of BreadcrumbItem (also <li>) — not nested inside,
+            // or React throws a hydration "<li> inside <li>" warning.
             return (
-              <BreadcrumbItem key={idx}>
-                {!isLast ? (
-                  <>
+              <React.Fragment key={idx}>
+                <BreadcrumbItem>
+                  {!isLast ? (
                     <BreadcrumbLink asChild className="text-sm">
                       <Link to={seg.href ?? "/"}>{seg.label}</Link>
                     </BreadcrumbLink>
-                    <BreadcrumbSeparator />
-                  </>
-                ) : (
-                  <BreadcrumbPage className="text-sm">{seg.label}</BreadcrumbPage>
-                )}
-              </BreadcrumbItem>
+                  ) : (
+                    <BreadcrumbPage className="text-sm">{seg.label}</BreadcrumbPage>
+                  )}
+                </BreadcrumbItem>
+                {!isLast && <BreadcrumbSeparator />}
+              </React.Fragment>
             );
           })}
         </BreadcrumbList>
