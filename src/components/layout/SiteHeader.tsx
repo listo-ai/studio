@@ -3,7 +3,7 @@ import { useUiStore } from "@listo/ui-core";
 import { useAuthStore } from "@listo/ui-core";
 import { useAuth } from "@listo/ui-core";
 import { ArrowLeft, LogOut, Moon, Sparkles, Sun } from "lucide-react";
-import { useGlobalAiChat } from "@/features/global-ai-chat";
+import { useGlobalAiChat } from "@listo/ui-core";
 import {
   Breadcrumb,
   BreadcrumbItem,

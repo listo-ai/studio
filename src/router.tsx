@@ -1,14 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Shell } from "@/components/layout/Shell";
-import { FlowsListPage } from "@/pages/flows/FlowsListPage";
-import { FlowsPage } from "@/pages/flows/FlowsPage";
-import { PagesListPage } from "@/pages/pages/PagesListPage";
-import { PageBuilderPage } from "@/features/page-builder/PageBuilderPage";
-import { BlocksPage } from "@/pages/blocks/BlocksPage";
-import { SettingsPage } from "@/pages/settings/SettingsPage";
-import { SduiPage } from "@listo/ui-core";
-import { SduiRenderPage } from "@listo/ui-core";
-import { ScopeProvider } from "@listo/ui-core";
+import {
+  FlowsListPage,
+  FlowsPage,
+  PagesListPage,
+  PageBuilderPage,
+  BlocksPage,
+  SettingsPage,
+  SduiPage,
+  SduiRenderPage,
+  ScopeProvider,
+} from "@listo/ui-core";
 
 // ---------------------------------------------------------------------------
 // Shell children — shared between the local route and the /scope/... route

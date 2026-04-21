@@ -6,6 +6,17 @@
 
 @import "tailwindcss";
 
+/*
+ * Tailwind v4 only scans files that are in the source tree.
+ * Workspace packages resolve to their compiled dist/, so Tailwind misses
+ * utility classes used in their .tsx source. Explicitly add each
+ * workspace package source dir here.
+ */
+@source "../../ui-kit/src";
+@source "../../ui-core/src";
+@source "../../block-ui-sdk/src";
+@source "../../agent-client-ts/src";
+
 /*---break---
  */
 

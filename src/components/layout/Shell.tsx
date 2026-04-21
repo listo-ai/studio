@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import { SiteHeader } from "./SiteHeader";
 import { AppSidebar } from "./Sidebar";
 import { SidebarProvider, SidebarInset } from "@listo/ui-kit";
-import { GlobalAiChat, useChatContextSync } from "@/features/global-ai-chat";
+import { GlobalAiChat, useChatContextSync } from "@listo/ui-core";
 
 // Shell — outermost layout frame using shadcn sidebar-16 pattern.
 // SidebarProvider owns collapse state (persisted in cookie).

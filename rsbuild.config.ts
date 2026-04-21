@@ -3,35 +3,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
+import { MF_SHARED_SINGLETONS } from "@listo/ui-core/mf";
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Module Federation shared singletons — every dep listed here must appear
-// in both host and remote configs with the same version string and
-// singleton: true.  Adding a dep here without singleton: true is a bug.
-const MF_SHARED_SINGLETONS = {
-  react: {
-    singleton: true,
-    requiredVersion: "^19.0.0",
-  },
-  "react-dom": {
-    singleton: true,
-    requiredVersion: "^19.0.0",
-  },
-  "react-router-dom": {
-    singleton: true,
-    requiredVersion: "^7.0.0",
-  },
-  zustand: {
-    singleton: true,
-    requiredVersion: "^5.0.0",
-  },
-  "@tanstack/react-query": {
-    singleton: true,
-    requiredVersion: "^5.40.0",
-  },
-} as const;
 
 export default defineConfig(({ envMode }) => {
   const isTauri = envMode === "tauri";
@@ -41,6 +16,14 @@ export default defineConfig(({ envMode }) => {
 
     source: {
       entry: { index: "./src/index.ts" },
+      // Explicitly forward PUBLIC_AGENT_URL from the shell environment so
+      // `make dev` (dev/run.sh) can point each Studio at a different agent.
+      // Falls back to the default standalone bind address.
+      define: {
+        "import.meta.env.PUBLIC_AGENT_URL": JSON.stringify(
+          process.env.PUBLIC_AGENT_URL ?? "http://localhost:8080"
+        ),
+      },
     },
 
     resolve: {
@@ -52,17 +35,6 @@ export default defineConfig(({ envMode }) => {
     output: {
       target: "web",
       distPath: { root: isTauri ? "dist-tauri" : "dist-web" },
-    },
-
-    source: {
-      // Explicitly forward PUBLIC_AGENT_URL from the shell environment so
-      // `make dev` (dev/run.sh) can point each Studio at a different agent.
-      // Falls back to the default standalone bind address.
-      define: {
-        "import.meta.env.PUBLIC_AGENT_URL": JSON.stringify(
-          process.env.PUBLIC_AGENT_URL ?? "http://localhost:8080"
-        ),
-      },
     },
 
     html: {
@@ -91,6 +63,12 @@ export default defineConfig(({ envMode }) => {
               "./registry": "./src/providers/registry.tsx",
             },
             shared: MF_SHARED_SINGLETONS,
+            // Point the DTS plugin at the actual output dir so type zips land
+            // in the right place and don't throw ENOENT on the default dist/.
+            dts: {
+              generateTypes: { tsConfigPath: "./tsconfig.json" },
+              outputDir: isTauri ? "dist-tauri" : "dist-web",
+            },
           }),
         );
 

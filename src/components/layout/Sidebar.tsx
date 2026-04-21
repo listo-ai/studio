@@ -12,12 +12,8 @@ import {
   Box,
 } from "lucide-react";
 import type { Link, NodeSnapshot } from "@listo/agent-client";
-import { useGraphStoreOptional } from "@listo/ui-core";
-import { isFlowNode } from "@/pages/flows/flow-model";
-import { buildNodeContextItems, buildCopyItems, NodeContextMenu } from "@/components/node-context-menu";
-import { useRemoveNode } from "@/lib/node";
-import { AddChildNodeDialog } from "@/components/AddChildNodeDialog";
-import { cn } from "@/lib/utils";
+import { useGraphStoreOptional, isFlowNode, buildNodeContextItems, buildCopyItems, NodeContextMenu, useRemoveNode, AddChildNodeDialog, NavTreeView, NavModeToggle, useNavTree, useNavMode } from "@listo/ui-core";
+import { cn } from "@listo/ui-kit";
 import {
   Sidebar,
   SidebarContent,
@@ -34,7 +30,6 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@listo/ui-kit";
-import { NavTreeView, NavModeToggle, useNavTree, useNavMode } from "@/lib/nav";
 import {
   RemoteAgentsSection,
   ScopeIndicator,
