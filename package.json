@@ -1,5 +1,5 @@
 {
-  "name": "@sys/studio",
+  "name": "@listo/studio",
   "version": "0.1.0",
   "private": true,
   "description": "Studio UI — Rsbuild + Rspack + Module Federation + Tauri 2",
