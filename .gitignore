@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-web/
+dist-tauri/
+*.tsbuildinfo
+gen-types/
+
+# Tauri
+src-tauri/target/
+src-tauri/WixTools/
+
+# pnpm lock — managed at listo-repos/ workspace root
+pnpm-lock.yaml
+
+# @mf-types zip generated at build time
+dist/@mf-types.zip
+@mf-types/
